@@ -4,7 +4,7 @@ import { collection, getDocs, query, orderBy, doc, getDoc } from 'firebase/fires
 import { db } from '../firebase';
 import CauseCard from '../components/ui/CauseCard';
 import { 
-  Heart, Eye, Camera, Video, ArrowRight, Star, Users, 
+  Heart, Camera, Video, ArrowRight, Users, 
   CheckCircle, ChevronDown 
 } from 'lucide-react';
 import './Home.css';

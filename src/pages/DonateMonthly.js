@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Heart, CheckCircle, ArrowRight, Repeat } from 'lucide-react';
+import React from 'react';
+import { CheckCircle, ArrowRight, Repeat } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import './DonateMonthly.css';
 
@@ -13,14 +12,12 @@ const PLANS = [
 
 export default function DonateMonthlyPage() {
   const { currentUser, loginWithGoogle } = useAuth();
-  const [selectedPlan, setSelectedPlan] = useState(null);
 
   const handleDonate = async (plan) => {
     if (!currentUser) {
       await loginWithGoogle();
       return;
     }
-    setSelectedPlan(plan);
     // Load Razorpay and open
     const script = document.createElement('script');
     script.src = 'https://checkout.razorpay.com/v1/checkout.js';
