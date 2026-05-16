@@ -1,0 +1,84 @@
+// ─────────────────────────────────────────────────────
+// FIRESTORE SECURITY RULES
+// Copy these into Firebase Console > Firestore > Rules
+// ─────────────────────────────────────────────────────
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper: check if user is admin
+    function isAdmin() {
+      return request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
+    // Helper: authenticated user
+    function isAuth() {
+      return request.auth != null;
+    }
+
+    // Users: users can read/write their own doc; admins can read all
+    match /users/{userId} {
+      allow read, write: if request.auth.uid == userId || isAdmin();
+    }
+
+    // Causes: public read, admin write
+    match /causes/{causeId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Donations: authenticated users can create; admin can read all
+    match /donations/{donationId} {
+      allow read: if isAdmin() || request.auth.uid == resource.data.userId;
+      allow create: if isAuth();
+    }
+
+    // Blog: public read, admin write
+    match /blog/{postId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Gallery: public read, admin write
+    match /gallery/{photoId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // CMS: public read, admin write
+    match /cms/{pageId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Contact messages: anyone can create, only admin can read
+    match /contact_messages/{msgId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Volunteers: authenticated users can create own record; admin can read all
+    match /volunteers/{volId} {
+      allow create: if isAuth();
+      allow read, update, delete: if isAdmin();
+    }
+  }
+}
+
+// ─────────────────────────────────────────────────────
+// FIREBASE STORAGE RULES
+// Copy into Firebase Console > Storage > Rules
+// ─────────────────────────────────────────────────────
+/*
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /gallery/{allPaths=**} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+  }
+}
+*/

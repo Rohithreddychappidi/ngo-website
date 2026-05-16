@@ -1,0 +1,235 @@
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(4px);
+  z-index: 9000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-box {
+  background: white;
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  width: 100%;
+  max-width: 440px;
+  position: relative;
+  box-shadow: var(--shadow-lg);
+  animation: slideUp 0.25s ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.success-box {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.success-box h2 {
+  font-family: var(--font-display);
+  font-size: 1.8rem;
+  color: var(--text-dark);
+}
+
+.success-box p { color: var(--text-mid); font-size: 1rem; }
+.success-sub { font-size: 0.9rem; color: var(--text-light); }
+
+.modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: var(--surface-alt);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-mid);
+  transition: background 0.2s;
+}
+
+.modal-close:hover { background: var(--border); }
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.modal-header h2 {
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+}
+
+.modal-cause-info {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  background: var(--bg-warm);
+  border-radius: var(--radius);
+  padding: 12px;
+  margin-bottom: 20px;
+}
+
+.modal-cause-info img {
+  width: 60px;
+  height: 50px;
+  object-fit: cover;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.modal-cause-info h3 {
+  font-size: 0.95rem;
+  font-family: var(--font-display);
+  margin-bottom: 4px;
+}
+
+.cause-badge-sm {
+  font-size: 0.7rem;
+  background: var(--primary);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 20px;
+  text-transform: capitalize;
+}
+
+.modal-field {
+  margin-bottom: 16px;
+}
+
+.modal-field label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-mid);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.modal-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  color: var(--text-dark);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.modal-input:focus { border-color: var(--primary); }
+
+.field-hint { font-size: 0.75rem; color: var(--text-light); margin-top: 4px; }
+
+.qty-control {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  width: fit-content;
+  overflow: hidden;
+}
+
+.qty-control button {
+  padding: 8px 16px;
+  font-size: 1.2rem;
+  background: var(--surface-alt);
+  color: var(--text-dark);
+  border: none;
+  transition: background 0.15s;
+}
+
+.qty-control button:hover { background: var(--border); }
+
+.qty-control span {
+  padding: 8px 20px;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-top: 1px dashed var(--border);
+  border-bottom: 1px dashed var(--border);
+  margin-bottom: 14px;
+}
+
+.total-row span:first-child { font-weight: 600; color: var(--text-mid); }
+.total-amount { font-size: 1.4rem; font-weight: 700; color: var(--primary); font-family: var(--font-display); }
+
+.anon-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--text-mid);
+  cursor: pointer;
+  margin-bottom: 14px;
+}
+
+.donor-info {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  background: var(--surface-alt);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  margin-bottom: 20px;
+}
+
+.donor-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.donor-info strong { display: block; font-size: 0.9rem; color: var(--text-dark); }
+.donor-info span { font-size: 0.78rem; color: var(--text-light); }
+
+.pay-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--primary);
+  color: white;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 50px;
+  transition: all 0.2s;
+  margin-bottom: 10px;
+}
+
+.pay-btn:hover { background: var(--primary-dark); }
+.pay-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.secure-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  font-size: 0.75rem;
+  color: var(--text-light);
+}

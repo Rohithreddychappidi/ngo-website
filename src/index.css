@@ -1,0 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+  --primary: #E8521A;
+  --primary-light: #FF6B35;
+  --primary-dark: #C03E0E;
+  --accent: #F5A623;
+  --accent-light: #FFD166;
+  --bg: #FAFAF8;
+  --bg-warm: #FFF8F3;
+  --surface: #FFFFFF;
+  --surface-alt: #F5F2EE;
+  --text-dark: #1A1A1A;
+  --text-mid: #4A4A4A;
+  --text-light: #8A8A8A;
+  --border: #E8E4DE;
+  --success: #2ECC71;
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body: 'DM Sans', sans-serif;
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 20px rgba(0,0,0,0.10);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.14);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 20px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text-dark);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+h1,h2,h3,h4 { font-family: var(--font-display); line-height: 1.2; }
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+button { cursor: pointer; font-family: var(--font-body); border: none; outline: none; }
+input, textarea, select { font-family: var(--font-body); }
+
+.container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+
+.btn-primary {
+  background: var(--primary); color: white;
+  padding: 12px 28px; border-radius: 50px;
+  font-weight: 600; font-size: 0.95rem;
+  transition: all 0.2s ease;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-primary:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px rgba(232,82,26,0.3);
+}
+.btn-outline {
+  background: transparent; color: var(--primary);
+  border: 2px solid var(--primary);
+  padding: 10px 24px; border-radius: 50px;
+  font-weight: 600; font-size: 0.95rem;
+  transition: all 0.2s ease;
+}
+.btn-outline:hover { background: var(--primary); color: white; }
+.section-label {
+  font-size: 0.8rem; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: var(--primary); margin-bottom: 12px;
+}
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(1.8rem, 3vw, 2.8rem);
+  color: var(--text-dark); margin-bottom: 16px;
+}
+.section-subtitle {
+  font-size: 1.05rem; color: var(--text-mid);
+  max-width: 600px; line-height: 1.7;
+}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
