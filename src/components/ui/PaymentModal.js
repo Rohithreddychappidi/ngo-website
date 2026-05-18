@@ -93,8 +93,13 @@ export default function PaymentModal({ cause, onClose }) {
         setLoading(false);
       },
       prefill: {
-        name: currentUser.displayName,
-        email: currentUser.email,
+        name: currentUser.displayName || 'Donor',
+        email: currentUser.email || '',
+        contact: currentUser.phoneNumber || '9999999999',
+      },
+      notes: {
+        causeId: cause.id || '',
+        causeTitle: cause.title || '',
       },
       theme: {
         color: '#E8521A',
