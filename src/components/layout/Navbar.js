@@ -37,7 +37,7 @@ export default function Navbar() {
         <Link to="/" className="navbar-logo">
           <span className="logo-icon">❤</span>
           <div className="logo-text">
-            <span className="logo-name">Aneesha Joy</span>
+            <span className="logo-name">Aneesha</span>
             <span className="logo-tag">Foundation</span>
           </div>
         </Link>

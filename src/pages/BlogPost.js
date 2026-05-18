@@ -9,10 +9,10 @@ import './BlogPost.css';
 const DEMO_POST = {
   title: 'How We Fed 500 Families This Diwali',
   category: 'Food',
-  author: 'Aneesha Joy',
+  author: 'Aneesha',
   createdAt: '2024-10-28T10:00:00Z',
   coverImage: 'https://images.unsplash.com/photo-1547592180-85f173990554?w=1200&q=80',
-  content: `<p>This Diwali, Aneesha Joy Foundation undertook its most ambitious food drive yet — reaching over 500 families across Visakhapatnam's underserved neighborhoods.</p>
+  content: `<p>This Diwali, Aneesha Foundation undertook its most ambitious food drive yet — reaching over 500 families across Visakhapatnam's underserved neighborhoods.</p>
 <h2>The Preparation</h2>
 <p>Three weeks before Diwali, our team of 40 volunteers began collecting donations, coordinating with local suppliers, and preparing food packages. Each package included rice, dal, cooking oil, sugar, tea, and sweets — enough to feed a family of four for a week.</p>
 <h2>The Day of the Drive</h2>

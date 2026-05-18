@@ -4,15 +4,15 @@ import { db } from '../firebase';
 import './About.css';
 
 const DEFAULT = {
-  heroTitle: "About Aneesha Joy Foundation",
+  heroTitle: "About Aneesha Foundation",
   heroSubtitle: "A story of compassion, action, and community — rooted in Visakhapatnam, reaching hearts everywhere.",
   heroImage: "https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=1400&q=80",
   mission: "Our mission is to uplift the underprivileged through transparent, community-driven initiatives spanning food, education, healthcare, and environmental care.",
   vision: "We envision a world where every child has access to education, every family has food on the table, and every community thrives with dignity.",
-  story: `Aneesha Joy Foundation was born from a simple belief — that small acts of kindness, done consistently and transparently, can transform entire communities.\n\nFounded in Visakhapatnam, we began by organizing birthday celebrations for orphanage children and food drives in underserved neighborhoods. Today, we've grown into a multi-cause organization supporting food security, education, healthcare, animal welfare, and environmental conservation.\n\nEvery donation we receive is documented with photos and videos, shared with our community of donors. We believe in full transparency — because when you give, you deserve to see the difference it makes.`,
+  story: `Aneesha Foundation was born from a simple belief — that small acts of kindness, done consistently and transparently, can transform entire communities.\n\nFounded in Visakhapatnam, we began by organizing birthday celebrations for orphanage children and food drives in underserved neighborhoods. Today, we've grown into a multi-cause organization supporting food security, education, healthcare, animal welfare, and environmental conservation.\n\nEvery donation we receive is documented with photos and videos, shared with our community of donors. We believe in full transparency — because when you give, you deserve to see the difference it makes.`,
   teamTitle: "Meet Our Team",
   team: [
-    { name: "Aneesha Joy P", role: "Founder & Director", image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80" },
+    { name: "Aneesha P", role: "Founder & Director", image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80" },
     { name: "Volunteer Leader", role: "Head of Operations", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80" },
     { name: "Community Manager", role: "Outreach Coordinator", image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80" },
   ],

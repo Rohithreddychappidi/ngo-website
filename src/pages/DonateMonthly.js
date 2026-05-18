@@ -26,7 +26,7 @@ export default function DonateMonthlyPage() {
         key: process.env.REACT_APP_RAZORPAY_KEY || 'YOUR_RAZORPAY_KEY_ID',
         amount: plan.amount * 100,
         currency: 'INR',
-        name: 'Aneesha Joy Foundation',
+        name: 'Aneesha Foundation',
         description: `Monthly Donation — ${plan.name} Plan`,
         recurring: 1,
         subscription_card_change: 1,

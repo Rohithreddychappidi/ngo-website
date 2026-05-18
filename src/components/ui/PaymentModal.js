@@ -59,7 +59,7 @@ export default function PaymentModal({ cause, onClose }) {
       key: razorpayKey,
       amount: totalAmount * 100, // paise
       currency: 'INR',
-      name: 'Aneesha Joy Foundation',
+      name: 'Aneesha Foundation',
       description: cause.title,
       image: '/logo192.png',
       handler: async function (response) {

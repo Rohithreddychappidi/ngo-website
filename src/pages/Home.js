@@ -14,7 +14,7 @@ const CATEGORIES = ['All', 'Food', 'Birthday', 'Environment', 'Animals', 'Educat
 const DEFAULT_CONTENT = {
   hero: {
     headline: "Transform Lives With Every Donation",
-    subheadline: "Join Aneesha Joy Foundation in creating meaningful change across Visakhapatnam — one cause at a time.",
+    subheadline: "Join Aneesha Foundation in creating meaningful change across Visakhapatnam — one cause at a time.",
     ctaText: "Start Donating",
     bgImage: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=1600&q=80",
   },
@@ -91,7 +91,7 @@ export default function HomePage() {
       >
         <div className="hero-overlay" />
         <div className="container hero-content">
-          <p className="hero-label">Aneesha Joy Foundation</p>
+          <p className="hero-label">Aneesha Foundation</p>
           <h1 className="hero-title">{content.hero?.headline || DEFAULT_CONTENT.hero.headline}</h1>
           <p className="hero-sub">{content.hero?.subheadline || DEFAULT_CONTENT.hero.subheadline}</p>
           <div className="hero-ctas">

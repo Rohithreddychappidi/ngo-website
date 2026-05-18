@@ -13,7 +13,7 @@ export default function Footer() {
             <div className="footer-logo">
               <span className="logo-icon">❤</span>
               <div>
-                <div className="logo-name">Aneesha Joy Foundation</div>
+                <div className="logo-name">Aneesha Foundation</div>
                 <div className="logo-tag">Making a difference, one life at a time</div>
               </div>
             </div>
@@ -74,7 +74,7 @@ export default function Footer() {
       </div>
       <div className="footer-bottom">
         <div className="container footer-bottom-inner">
-          <span>© 2024 Aneesha Joy Foundation. All rights reserved.</span>
+          <span>© 2024 Aneesha Foundation. All rights reserved.</span>
           <span className="made-with">Made with <Heart size={12} className="heart-icon" /> for a better world</span>
         </div>
       </div>
