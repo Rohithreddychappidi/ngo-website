@@ -13,7 +13,7 @@ import BlogPage from './pages/Blog';
 import BlogPostPage from './pages/BlogPost';
 import ContactPage from './pages/Contact';
 import GalleryPage from './pages/Gallery';
-import DonateMonthlyPage from './pages/DonateMonthly';
+import DonationPage from './pages/Donation';
 import VolunteerPage from './pages/Volunteer';
 
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -51,7 +51,8 @@ function App() {
           <Route path="/blog/:id" element={<PublicLayout><BlogPostPage /></PublicLayout>} />
           <Route path="/contact" element={<PublicLayout><ContactPage /></PublicLayout>} />
           <Route path="/gallery" element={<PublicLayout><GalleryPage /></PublicLayout>} />
-          <Route path="/donate-monthly" element={<PublicLayout><DonateMonthlyPage /></PublicLayout>} />
+          <Route path="/donate" element={<PublicLayout><DonationPage /></PublicLayout>} />
+          <Route path="/donate-monthly" element={<PublicLayout><DonationPage /></PublicLayout>} />
           <Route path="/volunteer" element={<PublicLayout><VolunteerPage /></PublicLayout>} />
 
           <Route path="/admin" element={<AdminDashboard />} />

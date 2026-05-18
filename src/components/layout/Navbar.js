@@ -25,7 +25,7 @@ export default function Navbar() {
     { to: '/', label: 'Home' },
     { to: '/about', label: 'About' },
     { to: '/causes', label: 'Causes' },
-    { to: '/donate-monthly', label: 'Donate Monthly' },
+    { to: '/donate', label: 'Donation' },
     { to: '/gallery', label: 'Gallery' },
     { to: '/blog', label: 'Blog' },
     { to: '/contact', label: 'Contact' },
@@ -37,7 +37,7 @@ export default function Navbar() {
         <Link to="/" className="navbar-logo">
           <span className="logo-icon">❤</span>
           <div className="logo-text">
-            <span className="logo-name">Aneesha</span>
+            <span className="logo-name">Aneesha </span>
             <span className="logo-tag">Foundation</span>
           </div>
         </Link>
@@ -83,7 +83,7 @@ export default function Navbar() {
               <User size={16} /> Sign In
             </button>
           )}
-          <Link to="/causes" className="btn-donate">
+          <Link to="/donate" className="btn-donate">
             <Heart size={15} /> Donate
           </Link>
         </div>
@@ -109,7 +109,7 @@ export default function Navbar() {
             ) : (
               <button onClick={loginWithGoogle} className="mobile-link">Sign In with Google</button>
             )}
-            <Link to="/causes" className="btn-primary" style={{ marginTop: 8 }}>Donate Now</Link>
+            <Link to="/donate" className="btn-primary" style={{ marginTop: 8 }}>Donate Now</Link>
           </div>
         </div>
       )}

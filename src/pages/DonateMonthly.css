@@ -183,3 +183,39 @@
   .plans-grid { grid-template-columns: 1fr; }
   .faq-grid { grid-template-columns: 1fr; }
 }
+
+/* ── Custom Amount Card ─────────────────────────────────────── */
+.custom-amount-card {
+  border: 1.5px dashed var(--primary);
+  background: rgba(232, 82, 26, 0.02);
+}
+
+.custom-amount-input-wrap {
+  display: flex;
+  align-items: center;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.rupee-prefix {
+  padding: 9px 10px;
+  background: var(--bg-soft, #f7f7f7);
+  font-weight: 700;
+  color: var(--primary);
+  border-right: 1.5px solid var(--border);
+  font-size: 0.95rem;
+}
+
+.custom-amount-input {
+  border: none;
+  outline: none;
+  padding: 9px 12px;
+  font-size: 0.95rem;
+  font-family: var(--font-body);
+  width: 100%;
+}
+
+.custom-amount-input::-webkit-inner-spin-button,
+.custom-amount-input::-webkit-outer-spin-button { -webkit-appearance: none; }
