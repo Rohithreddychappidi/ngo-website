@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Heart, Shield, CheckCircle } from 'lucide-react';
+import { X, Heart, Shield, CheckCircle, AlertCircle } from 'lucide-react';
 import { collection, addDoc, doc, updateDoc, increment } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { useAuth } from '../../contexts/AuthContext';
@@ -11,12 +11,24 @@ export default function PaymentModal({ cause, onClose }) {
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [error, setError] = useState('');
   const [anonymousDonate, setAnonymousDonate] = useState(false);
 
   const totalAmount = amount * quantity;
 
   const loadRazorpay = () => {
     return new Promise((resolve) => {
+      // Avoid loading the script multiple times
+      if (window.Razorpay) {
+        resolve(true);
+        return;
+      }
+      const existing = document.querySelector('script[src="https://checkout.razorpay.com/v1/checkout.js"]');
+      if (existing) {
+        existing.onload = () => resolve(true);
+        existing.onerror = () => resolve(false);
+        return;
+      }
       const script = document.createElement('script');
       script.src = 'https://checkout.razorpay.com/v1/checkout.js';
       script.onload = () => resolve(true);
@@ -26,23 +38,31 @@ export default function PaymentModal({ cause, onClose }) {
   };
 
   const handlePayment = async () => {
+    setError('');
     setLoading(true);
+
+    const razorpayKey = process.env.REACT_APP_RAZORPAY_KEY;
+    if (!razorpayKey || razorpayKey === 'YOUR_RAZORPAY_KEY_ID' || razorpayKey === 'placeholder') {
+      setError('Payment is not configured yet. Please try again later.');
+      setLoading(false);
+      return;
+    }
+
     const loaded = await loadRazorpay();
     if (!loaded) {
-      alert('Payment SDK failed to load. Check your internet connection.');
+      setError('Payment SDK failed to load. Check your internet connection.');
       setLoading(false);
       return;
     }
 
     const options = {
-      key: process.env.REACT_APP_RAZORPAY_KEY || 'YOUR_RAZORPAY_KEY_ID',
-      amount: totalAmount * 100, // in paise
+      key: razorpayKey,
+      amount: totalAmount * 100, // paise
       currency: 'INR',
       name: 'Aneesha Joy Foundation',
       description: cause.title,
       image: '/logo192.png',
       handler: async function (response) {
-        // Save donation to Firestore
         try {
           await addDoc(collection(db, 'donations'), {
             userId: currentUser.uid,
@@ -60,7 +80,6 @@ export default function PaymentModal({ cause, onClose }) {
             createdAt: new Date().toISOString(),
           });
 
-          // Update user total donated
           const userRef = doc(db, 'users', currentUser.uid);
           await updateDoc(userRef, {
             totalDonated: increment(totalAmount),
@@ -69,7 +88,7 @@ export default function PaymentModal({ cause, onClose }) {
           setSuccess(true);
         } catch (err) {
           console.error('Error saving donation:', err);
-          setSuccess(true); // Still show success since payment went through
+          setSuccess(true); // Payment went through even if Firestore save fails
         }
         setLoading(false);
       },
@@ -86,6 +105,13 @@ export default function PaymentModal({ cause, onClose }) {
     };
 
     const rzp = new window.Razorpay(options);
+
+    // Handle payment failures explicitly
+    rzp.on('payment.failed', function (response) {
+      setError(`Payment failed: ${response.error.description}`);
+      setLoading(false);
+    });
+
     rzp.open();
     setLoading(false);
   };
@@ -159,6 +185,12 @@ export default function PaymentModal({ cause, onClose }) {
             <span>{currentUser?.email}</span>
           </div>
         </div>
+
+        {error && (
+          <div className="payment-error">
+            <AlertCircle size={14} /> {error}
+          </div>
+        )}
 
         <button className="pay-btn" onClick={handlePayment} disabled={loading}>
           {loading ? 'Processing...' : `Pay ₹${totalAmount} Securely`}
