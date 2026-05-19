@@ -8,15 +8,15 @@ import {
 import './AdminLayout.css';
 
 const NAV = [
-  { path: '/admin', label: 'Dashboard', icon: <LayoutDashboard size={18} /> },
-  { path: '/admin/causes', label: 'Causes', icon: <Heart size={18} /> },
-  { path: '/admin/donations', label: 'Donations', icon: <IndianRupee size={18} /> },
-  { path: '/admin/donors', label: 'Donors', icon: <Users size={18} /> },
-  { path: '/admin/volunteers', label: 'Volunteers', icon: <UserCheck size={18} /> },
-  { path: '/admin/blog', label: 'Blog', icon: <FileText size={18} /> },
-  { path: '/admin/gallery', label: 'Gallery', icon: <Image size={18} /> },
-  { path: '/admin/messages', label: 'Messages', icon: <MessageSquare size={18} /> },
-  { path: '/admin/cms', label: 'CMS Pages', icon: <Settings size={18} /> },
+  { path: '/admin',             label: 'Dashboard',  icon: <LayoutDashboard size={18} /> },
+  { path: '/admin/causes',      label: 'Causes',     icon: <Heart size={18} /> },
+  { path: '/admin/donations',   label: 'Donations',  icon: <IndianRupee size={18} /> },
+  { path: '/admin/donors',      label: 'Donors',     icon: <Users size={18} /> },
+  { path: '/admin/volunteers',  label: 'Volunteers', icon: <UserCheck size={18} /> },
+  { path: '/admin/blog',        label: 'Blog',       icon: <FileText size={18} /> },
+  { path: '/admin/gallery',     label: 'Gallery',    icon: <Image size={18} /> },
+  { path: '/admin/messages',    label: 'Messages',   icon: <MessageSquare size={18} /> },
+  { path: '/admin/cms',         label: 'CMS Pages',  icon: <Settings size={18} /> },
 ];
 
 export default function AdminLayout({ children }) {
@@ -37,7 +37,6 @@ export default function AdminLayout({ children }) {
 
   return (
     <div className={`admin-layout ${sidebarOpen ? 'sidebar-open' : 'sidebar-closed'}`}>
-      {/* Sidebar */}
       <aside className="admin-sidebar">
         <div className="admin-sidebar-header">
           <Link to="/" className="admin-logo">
@@ -66,9 +65,10 @@ export default function AdminLayout({ children }) {
         <div className="admin-sidebar-footer">
           {sidebarOpen && currentUser && (
             <div className="admin-user-info">
-              <img src={currentUser.photoURL} alt="admin" />
+              {/* Use .photo and .name — camelCase from API normalizer */}
+              <img src={currentUser.photo || '/default-avatar.png'} alt="admin" />
               <div>
-                <strong>{currentUser.displayName?.split(' ')[0]}</strong>
+                <strong>{currentUser.name?.split(' ')[0]}</strong>
                 <span>Administrator</span>
               </div>
             </div>
@@ -80,7 +80,6 @@ export default function AdminLayout({ children }) {
         </div>
       </aside>
 
-      {/* Main */}
       <main className="admin-main">
         <div className="admin-content">
           {children}

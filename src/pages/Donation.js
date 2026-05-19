@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs, orderBy, query } from 'firebase/firestore';
-import { db } from '../firebase';
+import { donationPlans as plansApi } from '../services/api';
 import { CheckCircle, Heart, IndianRupee } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import PaymentModal from '../components/ui/PaymentModal';
@@ -22,19 +21,10 @@ export default function DonationPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchPlans = async () => {
-      try {
-        const snap = await getDocs(query(collection(db, 'donationPlans'), orderBy('order', 'asc')));
-        if (!snap.empty) {
-          setPlans(snap.docs.map(d => ({ id: d.id, ...d.data() })));
-        }
-      } catch {
-        // Falls back to DEFAULT_PLANS silently
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchPlans();
+    plansApi.getAll()
+      .then(data => { if (data?.length) setPlans(data); })
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
   const handlePlanDonate = async (plan) => {

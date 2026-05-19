@@ -1,80 +1,50 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { 
-  signInWithPopup, 
-  signOut, 
-  onAuthStateChanged 
-} from 'firebase/auth';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
-import { auth, googleProvider, db } from '../firebase';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { auth as authApi, getToken, setToken, removeToken } from '../services/api';
 
-const AuthContext = createContext();
-
-export function useAuth() {
-  return useContext(AuthContext);
-}
+const AuthContext = createContext(null);
+export const useAuth = () => useContext(AuthContext);
 
 export function AuthProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
-  const [userRole, setUserRole] = useState(null);
   const [loading, setLoading] = useState(true);
+  const location = useLocation();
 
-  async function loginWithGoogle() {
-    const result = await signInWithPopup(auth, googleProvider);
-    const user = result.user;
-    
-    // Save or update user in Firestore
-    const userRef = doc(db, 'users', user.uid);
-    const userSnap = await getDoc(userRef);
-    
-    if (!userSnap.exists()) {
-      await setDoc(userRef, {
-        uid: user.uid,
-        name: user.displayName,
-        email: user.email,
-        photo: user.photoURL,
-        role: 'user',
-        createdAt: new Date().toISOString(),
-        totalDonated: 0,
-        donations: []
-      });
-    }
-    
-    return result;
-  }
-
-  async function logout() {
-    await signOut(auth);
-    setUserRole(null);
-  }
-
+  // On mount — check for token in URL (OAuth callback) or localStorage
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      setCurrentUser(user);
-      if (user) {
-        const userRef = doc(db, 'users', user.uid);
-        const userSnap = await getDoc(userRef);
-        if (userSnap.exists()) {
-          setUserRole(userSnap.data().role || 'user');
-        }
-      } else {
-        setUserRole(null);
-      }
+    const params = new URLSearchParams(location.search);
+    const urlToken = params.get('token');
+
+    if (urlToken) {
+      setToken(urlToken);
+      // Clean token from URL without triggering a reload
+      window.history.replaceState({}, '', location.pathname);
+    }
+
+    const token = urlToken || getToken();
+    if (token) {
+      authApi.getMe()
+        .then(user => setCurrentUser(user))
+        .catch(() => { removeToken(); setCurrentUser(null); })
+        .finally(() => setLoading(false));
+    } else {
       setLoading(false);
-    });
-    return unsubscribe;
+    }
   }, []);
 
-  const value = {
-    currentUser,
-    userRole,
-    loginWithGoogle,
-    logout,
-    isAdmin: userRole === 'admin',
-    isVolunteer: userRole === 'volunteer' || userRole === 'admin',
+  const loginWithGoogle = () => {
+    authApi.googleLogin(); // Redirects to backend /auth/google
   };
 
+  const logout = () => {
+    removeToken();
+    setCurrentUser(null);
+  };
+
+  const isAdmin = currentUser?.role === 'admin';
+
   return (
-    <AuthContext.Provider value={value}>
+    <AuthContext.Provider value={{ currentUser, loading, loginWithGoogle, logout, isAdmin }}>
       {!loading && children}
     </AuthContext.Provider>
   );

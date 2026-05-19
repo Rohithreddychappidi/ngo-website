@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
-import { db } from '../../firebase';
+import { payments } from '../../services/api';
 import AdminLayout from './AdminLayout';
 import { format } from 'date-fns';
 import { Download } from 'lucide-react';
@@ -11,17 +10,15 @@ export default function AdminDonations() {
   const [filter, setFilter] = useState('');
 
   useEffect(() => {
-    getDocs(query(collection(db, 'donations'), orderBy('createdAt', 'desc')))
-      .then(snap => { setDonations(snap.docs.map(d => ({ id: d.id, ...d.data() }))); setLoading(false); })
-      .catch(() => setLoading(false));
+    payments.getAll().then(setDonations).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
   const filtered = donations.filter(d =>
-    !filter || d.userName?.toLowerCase().includes(filter.toLowerCase()) ||
+    !filter ||
+    d.userName?.toLowerCase().includes(filter.toLowerCase()) ||
     d.causeTitle?.toLowerCase().includes(filter.toLowerCase())
   );
-
-  const total = filtered.reduce((s, d) => s + (d.amount || 0), 0);
+  const total = filtered.reduce((s, d) => s + (Number(d.amount) || 0), 0);
 
   function exportCSV() {
     const header = 'Donor,Email,Cause,Amount,Payment ID,Date\n';
@@ -29,8 +26,10 @@ export default function AdminDonations() {
       `${d.anonymous ? 'Anonymous' : d.userName},${d.userEmail},${d.causeTitle},${d.amount},${d.paymentId},${d.createdAt ? format(new Date(d.createdAt), 'yyyy-MM-dd') : ''}`
     ).join('\n');
     const blob = new Blob([header + rows], { type: 'text/csv' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a'); a.href = url; a.download = 'donations.csv'; a.click();
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'donations.csv';
+    a.click();
   }
 
   return (
@@ -56,35 +55,25 @@ export default function AdminDonations() {
       <div className="admin-card">
         <table className="admin-table">
           <thead>
-            <tr>
-              <th>Donor</th>
-              <th>Email</th>
-              <th>Cause</th>
-              <th>Category</th>
-              <th>Amount</th>
-              <th>Payment ID</th>
-              <th>Date</th>
-              <th>Status</th>
-            </tr>
+            <tr><th>Donor</th><th>Email</th><th>Cause</th><th>Amount</th><th>Payment ID</th><th>Date</th><th>Status</th></tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={8} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-light)' }}>Loading...</td></tr>
+              <tr><td colSpan={7} style={{ textAlign: 'center', padding: '40px' }}>Loading...</td></tr>
             ) : filtered.length === 0 ? (
-              <tr><td colSpan={8} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-light)' }}>No donations found.</td></tr>
+              <tr><td colSpan={7} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-light)' }}>No donations found.</td></tr>
             ) : filtered.map(d => (
               <tr key={d.id}>
                 <td>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    {d.userPhoto && !d.anonymous && <img src={d.userPhoto} alt="" style={{ width: 28, height: 28, borderRadius: '50%', objectFit: 'cover' }} />}
+                    {d.userPhoto && !d.anonymous && <img src={d.userPhoto} alt="" style={{ width: 28, height: 28, borderRadius: '50%' }} />}
                     <span>{d.anonymous ? '🔒 Anonymous' : d.userName}</span>
                   </div>
                 </td>
                 <td style={{ fontSize: '0.82rem', color: 'var(--text-mid)' }}>{d.anonymous ? '—' : d.userEmail}</td>
                 <td>{d.causeTitle}</td>
-                <td><span style={{ background: 'rgba(232,82,26,0.1)', color: 'var(--primary)', padding: '2px 8px', borderRadius: 20, fontSize: '0.72rem', fontWeight: 600 }}>{d.causeCategory}</span></td>
                 <td style={{ fontWeight: 700, color: 'var(--primary)' }}>₹{d.amount}</td>
-                <td style={{ fontSize: '0.75rem', color: 'var(--text-light)', fontFamily: 'monospace' }}>{d.paymentId?.slice(0, 16)}...</td>
+                <td style={{ fontSize: '0.75rem', fontFamily: 'monospace', color: 'var(--text-light)' }}>{d.paymentId?.slice(0, 16)}...</td>
                 <td>{d.createdAt ? format(new Date(d.createdAt), 'MMM d, yyyy') : '—'}</td>
                 <td><span className={`status-badge ${d.status === 'success' ? 'status-success' : 'status-pending'}`}>{d.status || 'success'}</span></td>
               </tr>

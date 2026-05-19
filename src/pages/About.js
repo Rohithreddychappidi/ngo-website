@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { doc, getDoc } from 'firebase/firestore';
-import { db } from '../firebase';
+import { cms } from '../services/api';
 import './About.css';
 
 const DEFAULT = {
@@ -28,9 +27,9 @@ export default function AboutPage() {
   const [content, setContent] = useState(DEFAULT);
 
   useEffect(() => {
-    getDoc(doc(db, 'cms', 'about')).then(snap => {
-      if (snap.exists()) setContent({ ...DEFAULT, ...snap.data() });
-    }).catch(() => {});
+    cms.get('about')
+      .then(data => { if (data) setContent({ ...DEFAULT, ...data }); })
+      .catch(() => {});
   }, []);
 
   return (

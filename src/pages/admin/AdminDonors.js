@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
-import { db } from '../../firebase';
+import { payments } from '../../services/api';
 import AdminLayout from './AdminLayout';
 
 export default function AdminDonors() {
@@ -8,32 +7,21 @@ export default function AdminDonors() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Build donor summary from donations
-    getDocs(query(collection(db, 'donations'), orderBy('createdAt', 'desc')))
-      .then(snap => {
-        const donations = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        // Group by userId
+    payments.getAll()
+      .then(donations => {
         const map = {};
         donations.forEach(d => {
           if (d.anonymous) return;
           if (!map[d.userId]) {
-            map[d.userId] = {
-              userId: d.userId,
-              name: d.userName,
-              email: d.userEmail,
-              photo: d.userPhoto,
-              total: 0,
-              count: 0,
-              lastDonation: d.createdAt,
-            };
+            map[d.userId] = { userId: d.userId, name: d.userName, email: d.userEmail, photo: d.userPhoto, total: 0, count: 0, lastDonation: d.createdAt };
           }
-          map[d.userId].total += d.amount || 0;
+          map[d.userId].total += Number(d.amount) || 0;
           map[d.userId].count += 1;
         });
         setDonors(Object.values(map).sort((a, b) => b.total - a.total));
-        setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
   return (
@@ -42,22 +30,14 @@ export default function AdminDonors() {
         <h1>Donors</h1>
         <span style={{ fontSize: '0.85rem', color: 'var(--text-light)' }}>{donors.length} unique donors</span>
       </div>
-
       <div className="admin-card">
         <table className="admin-table">
           <thead>
-            <tr>
-              <th>#</th>
-              <th>Donor</th>
-              <th>Email</th>
-              <th>Total Donated</th>
-              <th>Donations</th>
-              <th>Last Donation</th>
-            </tr>
+            <tr><th>#</th><th>Donor</th><th>Email</th><th>Total Donated</th><th>Donations</th><th>Last Donation</th></tr>
           </thead>
           <tbody>
             {loading ? (
-              <tr><td colSpan={6} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-light)' }}>Loading...</td></tr>
+              <tr><td colSpan={6} style={{ textAlign: 'center', padding: '40px' }}>Loading...</td></tr>
             ) : donors.length === 0 ? (
               <tr><td colSpan={6} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-light)' }}>No donors yet.</td></tr>
             ) : donors.map((d, i) => (

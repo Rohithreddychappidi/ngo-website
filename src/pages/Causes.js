@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs, query, orderBy } from 'firebase/firestore';
-import { db } from '../firebase';
+import { causes as causesApi } from '../services/api';
 import CauseCard from '../components/ui/CauseCard';
 import './Causes.css';
 
@@ -15,31 +14,22 @@ const DEMO_CAUSES = [
   { id: 'd6', title: 'Medical Camp Support', category: 'Healthcare', amount: 1000, unit: 'patient', description: 'Fund free medical checkups for the rural community.', imageUrl: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&q=80' },
   { id: 'd7', title: 'Orphanage Monthly Fund', category: 'Orphanage', amount: 2000, unit: 'month', description: 'Monthly contributions to support our partner orphanages.', imageUrl: 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=400&q=80' },
   { id: 'd8', title: 'Clean Water Access', category: 'Healthcare', amount: 800, unit: 'household', description: 'Provide clean drinking water to underserved households.', imageUrl: 'https://images.unsplash.com/photo-1594671676461-7e649a2a7a4c?w=400&q=80' },
-  { id: 'd9', title: 'Tree Plantation Drive', category: 'Environment', amount: 75, unit: 'tree', description: 'Plant indigenous trees to restore local ecosystem balance.', imageUrl: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=400&q=80' },
-  { id: 'd10', title: 'Midday Meal Program', category: 'Food', amount: 25, unit: 'meal', description: 'Provide a nutritious midday meal for school children.', imageUrl: 'https://images.unsplash.com/photo-1547592180-85f173990554?w=400&q=80' },
-  { id: 'd11', title: 'Stray Animal Feeding', category: 'Animals', amount: 100, unit: 'week', description: 'Regular feeding and care for stray dogs and cats in the city.', imageUrl: 'https://images.unsplash.com/photo-1561037404-61cd46aa615b?w=400&q=80' },
-  { id: 'd12', title: 'Tutoring Program', category: 'Education', amount: 500, unit: 'student/month', description: 'One-on-one tutoring support for underprivileged students.', imageUrl: 'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=400&q=80' },
 ];
 
 export default function CausesPage() {
   const [activeCategory, setActiveCategory] = useState('All');
-  const [causes, setCauses] = useState([]);
+  const [causesList, setCausesList] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getDocs(query(collection(db, 'causes'), orderBy('createdAt', 'desc')))
-      .then(snap => {
-        const data = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-        setCauses(data);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
+    causesApi.getAll()
+      .then(data => setCausesList(data))
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
-  const sourceCauses = causes.length > 0 ? causes : DEMO_CAUSES;
-  const filtered = activeCategory === 'All'
-    ? sourceCauses
-    : sourceCauses.filter(c => c.category?.toLowerCase() === activeCategory.toLowerCase());
+  const source = causesList.length > 0 ? causesList : DEMO_CAUSES;
+  const filtered = activeCategory === 'All' ? source : source.filter(c => c.category?.toLowerCase() === activeCategory.toLowerCase());
 
   return (
     <main className="causes-page">
@@ -59,18 +49,12 @@ export default function CausesPage() {
         <div className="container">
           <div className="category-tabs" style={{ marginBottom: 36 }}>
             {CATEGORIES.map(cat => (
-              <button
-                key={cat}
-                className={`cat-tab ${activeCategory === cat ? 'active' : ''}`}
-                onClick={() => setActiveCategory(cat)}
-              >
+              <button key={cat} className={`cat-tab ${activeCategory === cat ? 'active' : ''}`} onClick={() => setActiveCategory(cat)}>
                 {cat}
               </button>
             ))}
           </div>
-
           <p className="results-count">{filtered.length} cause{filtered.length !== 1 ? 's' : ''} found</p>
-
           {loading ? (
             <div className="causes-grid-causes">
               {[...Array(8)].map((_, i) => <div key={i} className="skeleton-card" style={{ height: 320, borderRadius: 20, background: 'var(--surface-alt)' }} />)}

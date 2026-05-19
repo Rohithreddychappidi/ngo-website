@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { X, Heart, Shield, CheckCircle, AlertCircle } from 'lucide-react';
-import { collection, addDoc, doc, updateDoc, increment } from 'firebase/firestore';
-import { db } from '../../firebase';
+import { payments as paymentsApi } from '../../services/api';
 import { useAuth } from '../../contexts/AuthContext';
 import './PaymentModal.css';
 
@@ -16,107 +15,81 @@ export default function PaymentModal({ cause, onClose }) {
 
   const totalAmount = amount * quantity;
 
-  const loadRazorpay = () => {
-    return new Promise((resolve) => {
-      // Avoid loading the script multiple times
-      if (window.Razorpay) {
-        resolve(true);
-        return;
-      }
-      const existing = document.querySelector('script[src="https://checkout.razorpay.com/v1/checkout.js"]');
-      if (existing) {
-        existing.onload = () => resolve(true);
-        existing.onerror = () => resolve(false);
-        return;
-      }
-      const script = document.createElement('script');
-      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-      script.onload = () => resolve(true);
-      script.onerror = () => resolve(false);
-      document.body.appendChild(script);
-    });
-  };
+  const loadRazorpay = () => new Promise(resolve => {
+    if (window.Razorpay) { resolve(true); return; }
+    const existing = document.querySelector('script[src="https://checkout.razorpay.com/v1/checkout.js"]');
+    if (existing) { existing.onload = () => resolve(true); existing.onerror = () => resolve(false); return; }
+    const script = document.createElement('script');
+    script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
 
   const handlePayment = async () => {
     setError('');
     setLoading(true);
 
     const razorpayKey = process.env.REACT_APP_RAZORPAY_KEY;
-    if (!razorpayKey || razorpayKey === 'YOUR_RAZORPAY_KEY_ID' || razorpayKey === 'placeholder') {
-      setError('Payment is not configured yet. Please try again later.');
+    if (!razorpayKey || razorpayKey === 'placeholder') {
+      setError('Payment is not configured yet.');
       setLoading(false);
       return;
     }
 
     const loaded = await loadRazorpay();
-    if (!loaded) {
-      setError('Payment SDK failed to load. Check your internet connection.');
+    if (!loaded) { setError('Payment SDK failed to load. Check your connection.'); setLoading(false); return; }
+
+    let orderId;
+    try {
+      // Create order from backend — proper signature verification
+      const order = await paymentsApi.createOrder(totalAmount);
+      orderId = order.orderId;
+    } catch (err) {
+      setError('Could not initiate payment. Please try again.');
       setLoading(false);
       return;
     }
 
     const options = {
       key: razorpayKey,
-      amount: totalAmount * 100, // paise
+      amount: totalAmount * 100,
       currency: 'INR',
-      name: 'Aneesha Foundation',
+      name: 'Aneesha Joy Foundation',
       description: cause.title,
-      image: '/logo192.png',
+      order_id: orderId,
       handler: async function (response) {
         try {
-          await addDoc(collection(db, 'donations'), {
-            userId: currentUser.uid,
-            userName: anonymousDonate ? 'Anonymous' : currentUser.displayName,
-            userEmail: currentUser.email,
-            userPhoto: currentUser.photoURL,
-            causeId: cause.id,
-            causeTitle: cause.title,
-            causeCategory: cause.category,
+          await paymentsApi.verify({
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_signature: response.razorpay_signature,
+            cause_id: cause.id !== 'custom' ? cause.id : null,
+            cause_title: cause.title,
             amount: totalAmount,
-            quantity,
-            paymentId: response.razorpay_payment_id,
-            status: 'success',
             anonymous: anonymousDonate,
-            createdAt: new Date().toISOString(),
           });
-
-          const userRef = doc(db, 'users', currentUser.uid);
-          await updateDoc(userRef, {
-            totalDonated: increment(totalAmount),
-          });
-
           setSuccess(true);
-        } catch (err) {
-          console.error('Error saving donation:', err);
-          setSuccess(true); // Payment went through even if Firestore save fails
+        } catch {
+          setSuccess(true); // Payment went through even if verify call fails
         }
         setLoading(false);
       },
       prefill: {
-        name: currentUser.displayName || 'Donor',
+        name: currentUser.name || 'Donor',
         email: currentUser.email || '',
-        contact: currentUser.phoneNumber || '9999999999',
+        contact: '9999999999',
       },
-      notes: {
-        causeId: cause.id || '',
-        causeTitle: cause.title || '',
-      },
-      theme: {
-        color: '#E8521A',
-      },
-      modal: {
-        ondismiss: () => setLoading(false),
-      },
+      notes: { causeTitle: cause.title },
+      theme: { color: '#E8521A' },
+      modal: { ondismiss: () => setLoading(false) },
     };
 
     const rzp = new window.Razorpay(options);
-
-    // Handle payment failures explicitly
     rzp.on('payment.failed', function (response) {
       setError(`Payment failed: ${response.error.description}`);
       setLoading(false);
     });
-
     rzp.open();
     setLoading(false);
   };
@@ -139,29 +112,17 @@ export default function PaymentModal({ cause, onClose }) {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-box" onClick={e => e.stopPropagation()}>
         <button className="modal-close" onClick={onClose}><X size={20} /></button>
-        <div className="modal-header">
-          <Heart size={24} color="var(--primary)" />
-          <h2>Make a Donation</h2>
-        </div>
+        <div className="modal-header"><Heart size={24} color="var(--primary)" /><h2>Make a Donation</h2></div>
 
         <div className="modal-cause-info">
-          <img src={cause.imageUrl || `https://source.unsplash.com/120x80/?${cause.category}`} alt={cause.title} />
-          <div>
-            <h3>{cause.title}</h3>
-            <span className="cause-badge-sm">{cause.category}</span>
-          </div>
+          {cause.imageUrl && <img src={cause.imageUrl} alt={cause.title} />}
+          <div><h3>{cause.title}</h3><span className="cause-badge-sm">{cause.category}</span></div>
         </div>
 
         <div className="modal-field">
           <label>Amount per unit (₹)</label>
-          <input
-            type="number"
-            value={amount}
-            onChange={e => setAmount(Number(e.target.value))}
-            min={1}
-            className="modal-input"
-          />
-          <p className="field-hint">₹{cause.amount}/{cause.unit}</p>
+          <input type="number" value={amount} onChange={e => setAmount(Number(e.target.value))} min={1} className="modal-input" />
+          {cause.unit && <p className="field-hint">₹{cause.amount}/{cause.unit}</p>}
         </div>
 
         <div className="modal-field">
@@ -173,10 +134,7 @@ export default function PaymentModal({ cause, onClose }) {
           </div>
         </div>
 
-        <div className="total-row">
-          <span>Total Donation</span>
-          <span className="total-amount">₹{totalAmount}</span>
-        </div>
+        <div className="total-row"><span>Total Donation</span><span className="total-amount">₹{totalAmount}</span></div>
 
         <label className="anon-toggle">
           <input type="checkbox" checked={anonymousDonate} onChange={e => setAnonymousDonate(e.target.checked)} />
@@ -184,26 +142,17 @@ export default function PaymentModal({ cause, onClose }) {
         </label>
 
         <div className="donor-info">
-          <img src={currentUser?.photoURL} alt="" className="donor-avatar" />
-          <div>
-            <strong>{anonymousDonate ? 'Anonymous' : currentUser?.displayName}</strong>
-            <span>{currentUser?.email}</span>
-          </div>
+          <img src={currentUser?.photo || '/default-avatar.png'} alt="" className="donor-avatar" />
+          <div><strong>{anonymousDonate ? 'Anonymous' : currentUser?.name}</strong><span>{currentUser?.email}</span></div>
         </div>
 
-        {error && (
-          <div className="payment-error">
-            <AlertCircle size={14} /> {error}
-          </div>
-        )}
+        {error && <div className="payment-error"><AlertCircle size={14} /> {error}</div>}
 
         <button className="pay-btn" onClick={handlePayment} disabled={loading}>
           {loading ? 'Processing...' : `Pay ₹${totalAmount} Securely`}
         </button>
 
-        <div className="secure-note">
-          <Shield size={13} /> Secured by Razorpay. Your data is protected.
-        </div>
+        <div className="secure-note"><Shield size={13} /> Secured by Razorpay. Your data is protected.</div>
       </div>
     </div>
   );
