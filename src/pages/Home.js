@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { causes as causesApi, payments, cms } from '../services/api';
 import CauseCard from '../components/ui/CauseCard';
-import { Heart, Camera, Video, ArrowRight, Users, CheckCircle, ChevronDown } from 'lucide-react';
+import { Camera, Video, ArrowRight, Users, CheckCircle, ChevronDown } from 'lucide-react';
 import './Home.css';
 
 const CATEGORIES = ['All', 'Food', 'Birthday', 'Environment', 'Animals', 'Education', 'Orphanage', 'Healthcare'];

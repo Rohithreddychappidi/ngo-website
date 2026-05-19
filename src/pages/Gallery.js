@@ -29,9 +29,10 @@ export default function GalleryPage() {
   const source = photos.length > 0 ? photos : DEMO_GALLERY;
 
   useEffect(() => {
-    const s = ['All', ...new Set(source.map(p => p.category).filter(Boolean))];
-    setSections(s);
-  }, [source.length]);
+    const cats = ['All', ...new Set(source.map(p => p.category).filter(Boolean))];
+    setSections(cats);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [photos]);
 
   const filtered = activeSection === 'All' ? source : source.filter(p => p.category === activeSection);
 

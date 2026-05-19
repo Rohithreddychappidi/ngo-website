@@ -2,8 +2,6 @@ import React, { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { setToken } from '../services/api';
 
-// This page handles the redirect from: GET /auth/google/callback
-// Backend redirects to: https://yoursite.vercel.app/auth/callback?token=JWT
 export default function AuthCallback() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -20,11 +18,11 @@ export default function AuthCallback() {
 
     if (token) {
       setToken(token);
-      // Redirect to admin if admin, else home
       navigate('/', { replace: true });
     } else {
       navigate('/', { replace: true });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
