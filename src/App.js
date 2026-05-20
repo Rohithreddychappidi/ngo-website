@@ -29,6 +29,7 @@ import AdminGallery from './pages/admin/AdminGallery';
 import AdminMessages from './pages/admin/AdminMessages';
 import AdminCMS from './pages/admin/AdminCMS';
 import AdminHomeCMS from './pages/admin/AdminHomeCMS';
+import AdminAboutCMS from './pages/admin/AdminAboutCMS';
 
 import './App.css';
 
@@ -74,6 +75,7 @@ export default function App() {
           <Route path="/admin/messages"     element={<AdminMessages />} />
           <Route path="/admin/cms"          element={<AdminCMS />} />
           <Route path="/admin/home-cms"     element={<AdminHomeCMS />} />
+          <Route path="/admin/about-cms"    element={<AdminAboutCMS />} />
         </Routes>
       </AuthProvider>
     </Router>

@@ -17,6 +17,7 @@ const NAV = [
   { path: '/admin/gallery',     label: 'Gallery',    icon: <Image size={18} /> },
   { path: '/admin/messages',    label: 'Messages',   icon: <MessageSquare size={18} /> },
   { path: '/admin/home-cms',    label: 'Home Page',  icon: <Settings size={18} /> },
+  { path: '/admin/about-cms',   label: 'About Page', icon: <Settings size={18} /> },
   { path: '/admin/cms',         label: 'CMS Pages',  icon: <Settings size={18} /> },
 ];
 
