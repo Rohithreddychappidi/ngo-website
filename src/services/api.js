@@ -99,8 +99,9 @@ export const users = {
 
 // ─── CMS ──────────────────────────────────────────────────────────────────────
 export const cms = {
-  get  : (pageKey)         => fetch(`${BASE_URL}/api/cms/${pageKey}`).then(handle),
-  save : (pageKey, fields) => fetch(`${BASE_URL}/api/cms/${pageKey}`,{ method: 'POST', headers: jsonHeaders(), body: JSON.stringify(fields) }).then(handle),
+  get        : (pageKey)         => fetch(`${BASE_URL}/api/cms/${pageKey}`).then(handle),
+  save       : (pageKey, fields) => fetch(`${BASE_URL}/api/cms/${pageKey}`, { method: 'POST', headers: jsonHeaders(), body: JSON.stringify(fields) }).then(handle),
+  uploadImage: (formData)        => fetch(`${BASE_URL}/api/cms/upload/image`,{ method: 'POST', headers: formHeaders(), body: formData }).then(handle),
 };
 
 // ─── Donation Plans ───────────────────────────────────────────────────────────
